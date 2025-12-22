@@ -33,7 +33,7 @@ const general = () => {
     'Occipital Lobe':                          PALETTE.GREEN,
     'Limbic Lobe':                             PALETTE.PURPLE,
     'Basal Ganglia':                           PALETTE.LIME,
-    'Cerebelum':                               PALETTE.TEAL,
+    'Cerebellum':                              PALETTE.TEAL,
     'Corpus Callosum and Subcortical Regions': PALETTE.BROWN,
     'Vermis':                                  PALETTE.BLUEGRAY,
   };
