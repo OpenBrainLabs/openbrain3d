@@ -4,7 +4,7 @@ import { getScene } from './util/scene.js';
 import { getGeometry } from './util/geometry.js';
 import { newGui } from './util/gui.js';
 
-import { PALETTE, region_highlight } from './util/color.js';
+import { PALETTE, list_highlight } from './util/color.js';
 import { colors_array } from './util/array.js';
 
 const general = () => {
@@ -16,13 +16,29 @@ const general = () => {
 
   const gui = newGui();
 
+  let ACTIVE = {};
+  let initial_region = ATLAS.regions()[0];
+
   for (let region of ATLAS.regions()) {
+    ACTIVE[region] = {};
     const folder = gui.addFolder( region );
-    const obj = {'-- ALL --': () => updateRegion([region,""]),
+    const obj = {'-- ALL --': region == initial_region,
       ...Object.fromEntries( ATLAS.subregions(region).map(
-        sr => [sr, () => updateRegion([region,sr])]) )}
-    folder.add( obj, '-- ALL --' );
-    for (let subregion of ATLAS.subregions(region)) folder.add( obj, subregion );
+        sr => [sr, region == initial_region]) )}
+    folder.add( obj, '-- ALL --' ).onChange( value => {
+      for (let subregion of ATLAS.subregions(region)) {
+        ACTIVE[region][subregion] = value;
+        obj[subregion] = value;
+      }
+      update();
+    } );
+    for (let subregion of ATLAS.subregions(region)) {
+      ACTIVE[region][subregion] = region == initial_region;
+      folder.add( obj, subregion ).listen().onChange( value => {
+        ACTIVE[region][subregion] = value;
+        update();
+      } );
+    }
     folder.close();
   }
 
@@ -38,14 +54,14 @@ const general = () => {
     'Vermis':                                  PALETTE.BLUEGRAY,
   };
 
-  const colorsOfSubregion = ([r,s]) =>
-    colors_array(region_highlight(s||r,COLORS[r]))(ATLAS);
-
   scene.add( points );
 
-  const updateRegion = k => setPointsColor(colorsOfSubregion(k));
+  const colors = () =>
+    colors_array(list_highlight(ACTIVE,COLORS))(ATLAS);
 
-  updateRegion(['Frontal Lobe','']);
+  const update = () => setPointsColor(colors());
+
+  update();
 
   render();
 

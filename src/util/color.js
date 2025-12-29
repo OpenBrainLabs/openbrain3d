@@ -53,10 +53,23 @@ const region_highlight = (name,color) => qname => {
 	return [...h,a];
 }
 
+const list_highlight = (list,colors) => qname => {
+  let h,a;
+  if (list[qname[0]][qname[1]]) {
+    h = colors[qname[0]];
+    a = 1;
+  } else {
+    h = [1,1,1];
+    a = 0.1;
+  }
+	return [...h,a];
+}
+
 export {
   PALETTE,
   empty,
   abs_pos,
   abs_neg_pos,
 	region_highlight,
+  list_highlight,
 }
